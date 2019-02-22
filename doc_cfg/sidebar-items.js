@@ -1,0 +1,1 @@
+initSidebarItems({"attr":[["doc_cfg","The `#[doc_cfg(..)]` attribute works much like `#[cfg(..)]`, but it allows the item being documented to show up in the crate documentation when built on a platform or configuration that doesn't match the predicate."]]});

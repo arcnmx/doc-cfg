@@ -1,0 +1,4 @@
+var N = null;var searchIndex = {};
+searchIndex["doc_cfg"]={"doc":"The [`doc_cfg`] attribute is a convenience that removes the boilerplate involved with using `#[doc(cfg(..))]` in stable crates.","items":[[23,"doc_cfg","doc_cfg","The `#[doc_cfg(..)]` attribute works much like `#[cfg(..)]`, but it allows the item being documented to show up in the crate documentation when built on a platform or configuration that doesn't match the predicate.",N,N]],"paths":[]};
+searchIndex["doc_cfg_example"]={"doc":"This example shows how to use the `#[doc_cfg(..)]` attribute.","items":[[5,"cool_nonportable_fn","doc_cfg_example","Mark something as only available on fancy platforms!",N,[[]]],[5,"feature_gated_fn","","You can also display a message that differs from the actual `#[cfg(..)]` conditional.",N,[[]]],[5,"boring_old_fn","","A plain old normal function.",N,[[]]]],"paths":[]};
+initSearch(searchIndex);

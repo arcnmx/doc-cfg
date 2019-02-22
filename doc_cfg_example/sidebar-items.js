@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["boring_old_fn","A plain old normal function."],["cool_nonportable_fn","Mark something as only available on fancy platforms!"],["feature_gated_fn","You can also display a message that differs from the actual `#[cfg(..)]` conditional."]]});
