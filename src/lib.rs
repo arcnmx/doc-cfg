@@ -65,6 +65,15 @@ mod quote_macro;
 /// #[doc(cfg(feature = "cargo-feature-flag"))]
 /// pub fn cool_fn() { }
 /// ```
+///
+/// The attribute can also be used without a real conditional predicate, like so:
+/// ```no_run
+/// # #![cfg_attr(feature = "unstable-doc-cfg", feature(doc_cfg))]
+/// # use doc_cfg::doc_cfg;
+/// #[doc_cfg]
+/// #[doc(cfg(anything))]
+/// pub fn cool_fn() { }
+/// ```
 #[proc_macro_attribute]
 pub fn doc_cfg(attr: proc_macro::TokenStream, input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     doc_cfg_(attr.into(), input.into(), needs_cfg_attr()).into()
@@ -76,27 +85,25 @@ fn needs_cfg_attr() -> bool {
 }
 
 fn doc_cfg_(attr: TokenStream, input: TokenStream, needs_cfg_attr: bool) -> TokenStream {
-    if attr.clone().into_iter().next().is_none() {
-        panic!("#[doc_cfg(..)] conditional missing");
-    }
-
+    let has_attr = attr.clone().into_iter().next().is_some();
     let parsed = parse_item(input);
 
-    let cfg = if needs_cfg_attr {
-        quote! { attr =>
+    let cfg = match (has_attr, needs_cfg_attr) {
+        (false, _) => None,
+        (true, true) => Some(quote! { attr =>
             #[cfg_attr(feature = "unstable-doc-cfg", cfg(any(#attr, rustdoc)))]
             #[cfg_attr(not(feature = "unstable-doc-cfg"), cfg(#attr))]
-        }
-    } else {
-        quote! { attr =>
+        }),
+        (true, false) => Some(quote! { attr =>
             #[cfg(any(#attr, rustdoc))]
-        }
-    };
+        }),
+    }.unwrap_or_default();
 
-    let doc_cfg = if parsed.doc_cfg.is_empty() {
-        vec![quote! { attr => #[doc(cfg(#attr))] }]
-    } else {
-        parsed.doc_cfg
+    let doc_cfg = match (has_attr, parsed.doc_cfg.is_empty()) {
+        (_, false) => parsed.doc_cfg,
+        (true, true) => vec![quote! { attr => #[doc(cfg(#attr))] }],
+        //(false, true) => Vec::new(),
+        (false, true) => panic!("#[doc_cfg(..)] conditional missing"),
     };
 
     let doc_cfg = doc_cfg.into_iter()
@@ -229,6 +236,20 @@ mod test {
             #[inline]
             fn test() { }
         }, quote! { feature = "something" });
+    }
+
+    #[test]
+    fn no_cfg() {
+        test(quote! {
+            #[doc(cfg(feature = "something"))]
+            fn test() { }
+        }, quote! {
+            #[cfg_attr(feature = "unstable-doc-cfg", doc(cfg(feature = "something")))]
+            fn test() { }
+        }, quote! {
+            #[doc(cfg(feature = "something"))]
+            fn test() { }
+        }, TokenStream::new())
     }
 
     #[test]

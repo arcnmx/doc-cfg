@@ -24,5 +24,10 @@ pub fn cool_nonportable_fn() { wont_compile }
 #[doc(cfg(feature = "my-fancy-feature"))] // the #[doc(cfg(..))] suggestion presented by rustdoc
 pub fn feature_gated_fn() { wont_compile }
 
+/// We can include a label even if the item isn't conditionally compiled.
+#[doc_cfg]
+#[doc(cfg(anything))]
+pub fn pretending_fn() { }
+
 /// A plain old normal function.
 pub fn boring_old_fn() { }
