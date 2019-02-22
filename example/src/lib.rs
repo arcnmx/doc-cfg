@@ -6,7 +6,7 @@
 //! you shouldn't count on the `unstable-doc-cfg` feature working anywhere but
 //! with a nightly toolchain.
 //!
-//! Check the [source code of this example](../src/doc_cfg_example/lib.rs.html#12)
+//! Check the [source code of this example](../src/doc_cfg_example/lib.rs.html#13)
 //! to see how it all works, or [clone it from github](https://github.com/arcnmx/doc-cfg/tree/master/example)
 //! and try it yourself.
 
