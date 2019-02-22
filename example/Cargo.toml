@@ -1,0 +1,13 @@
+[package]
+name = "doc-cfg-example"
+version = "0.0.1"
+edition = "2018"
+
+[package.metadata.docs.rs]
+features = ["unstable-doc-cfg"]
+
+[dependencies]
+doc-cfg = { path = "../", version = "^0.1.0" }
+
+[features]
+unstable-doc-cfg = []

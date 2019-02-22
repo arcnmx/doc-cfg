@@ -1,0 +1,25 @@
+[package]
+name = "doc-cfg"
+version = "0.1.0" # keep in sync with html_root_url
+authors = ["arcnmx"]
+edition = "2018"
+
+description = "#[doc_cfg(..)] helper attribute"
+keywords = ["doc_cfg", "cfg", "documentation", "rustdoc"]
+categories = ["development-tools"]
+
+documentation = "https://docs.rs/doc-cfg/"
+repository = "https://github.com/arcnmx/doc-cfg"
+readme = "README.md"
+license = "MIT"
+
+[lib]
+proc-macro = true
+
+[badges]
+travis-ci = { repository = "arcnmx/doc-cfg" }
+maintenance = { status = "passively-maintained" }
+
+[dependencies]
+proc-macro2 = "^0.4.27"
+quote = { version = "^0.6.11", default-features = false }

@@ -1,0 +1,49 @@
+language: rust
+rust:
+- stable
+- nightly
+sudo: false
+os:
+- linux
+cache:
+  directories:
+  - "$HOME/.cargo"
+  - target
+env:
+  matrix:
+  - CARGO_FEATURES=
+  global:
+  - CARGO_QUIET=
+  - CARGO_INCREMENTAL=0
+  - secure: MSQrJ01XVsGEEfvUyFe+GCjut7wqQVuzxLI3gM8kS1/yvWoQTamVKD7VB5kMgBYGJf9RlljZVVlPn3j2ajsWuQOdiRKixxaaOA876jHx+IGWr4Phj2KS9+wGZ3Vir3kLaI2I7nmjMEQW0gxfYec0b7iiB5B4n2f8PnOdIlyc2cH4yPNeVbIVdQ/1EEz85Q+ZdajjJbJ46v4mNPszzzxTFzxSSbCiOuDuVKrVoYLFPKqCxOIvz7BEXF9bJdmFvR5wdIWzGJRTmP5ZmzYkLdjFyWScIa5P0iuuBLjoCOa61WkF35iOiNcGruZJoG4pRoxMq2MSpF4o5K5Fve0PilYIyoXggf6MiwK0ibgYUrYBM7uLFKd/ZHz/dOxUofl6/7amgZ3nsNjKoTAvqPsO4EBKxFL0S27x0f/ucGFCY/CGAJyHEhIonj5s+xNF5KgEyhWLyUNnCc+OQu4ghx6mvHdH17RciHszSYRawUHC+zsH7m3qXjFCeXH6sjmRSSYpJM+b4CHuVV54Xa9ufmRHpLzoYVex8t+iHovZiLlJXwVquy5igP5zrY6wLJ5+nGVJVk35rV0lufFezG4awHkb3JU+K/Xa7ScA6NVOWJEjbKdGC0uSdGM9SGdWY6ZgjNh8LZeYVxHphQVa901Gm7IzeXhxPkgiM9InXyL/qjWUuHYtSdw=
+  - secure: aZ1jU1Am19AFNXVKYBeIoIRk2eWc3rNX0wbskV5r/uRrfAOhz+Zw48eLyD1988ikqoiiDena2Qfhi3p81N951quoLtYrLU3Cf62lYDT9Kz5zYoM9H+Tx/zwMF/jH5baiyC/cVuSDAbmR+ql9t8JZH7U3rLTWyeiPlC7B7njIaH5M05PE4gpwjfWWql34XOLe3kjRJGqSTTraLOQ1wSSTfr9IlHkmkvOEov2X57U40+Hh9rT1HtfQX2Zz1Q2pX76yygRhdm3xoZ++KigwM39oPCKDpX40O0pRym34bJObIGAo63FqFlX2ofSQ8YloGOXHAhMFQ2Qbnn3BjhhZpDSWwhd4pa4S5hzCpUBy6DuJheB1NWODQqMu6CejfgUkT4V4V6SlOrMDjH5Uwh+18PAb+IviREpLIZbOZrddE18DspHMqTj0OFr9RdlW7t2LbBy7c08vN1niHHpOMPH6g4uE8tZnknNGGIwrPdXjdfNHOdzCD32ylKjlgyj9z/eL5rh0Lo7DBbtAPTOetupQiQGxuRT8OcqTIu6phkhQH6cev/rrzowtT6Cv5Vr4dDAbWDzaChLkjh9UgNVKFG6HA6TdIx71efxx7WgUdz7wAGuJBxPn832XnpQ2ZzZ39/fQQlWO17ak+dP2lZ5qF8fvx8Oghl6MWV6lsrL2Ij+8SbQ46L0=
+before_install:
+- curl -L https://github.com/arcnmx/ci/archive/0.2.tar.gz | tar -xzC $HOME && . $HOME/ci-0.2/src
+script:
+- cargo test
+- cargo build
+- cd $TRAVIS_BUILD_DIR/example
+- cargo test
+- cargo build
+- cargo doc
+- |
+  if [[ $TRAVIS_RUST_VERSION = nightly ]]; then
+    cargo test --features unstable-doc-cfg &&
+    cargo build --features unstable-doc-cfg &&
+    cargo doc --features unstable-doc-cfg
+  fi
+deploy:
+  provider: script
+  script: 'true'
+  on:
+    tags: true
+    all_branches: true
+    condition: "$TRAVIS_RUST_VERSION = stable"
+before_deploy:
+- cd $TRAVIS_BUILD_DIR/example
+- cargo doc --features unstable-doc-cfg -p doc-cfg-example -p doc-cfg # this works on stable (for now)
+- cd $TRAVIS_BUILD_DIR
+- cargo package
+after_deploy:
+- cargo pages-publish
+- cargo publish
