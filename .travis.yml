@@ -12,6 +12,7 @@ cache:
 env:
   matrix:
   - CARGO_FEATURES=
+  - CARGO_FEATURES=quote
   global:
   - CARGO_QUIET=
   - CARGO_INCREMENTAL=0
@@ -38,7 +39,7 @@ deploy:
   on:
     tags: true
     all_branches: true
-    condition: "$TRAVIS_RUST_VERSION = stable"
+    condition: "$TRAVIS_RUST_VERSION = stable && -z $CARGO_FEATURES"
 before_deploy:
 - cd $TRAVIS_BUILD_DIR/example
 - cargo doc --features unstable-doc-cfg -p doc-cfg-example -p doc-cfg # this works on stable (for now)

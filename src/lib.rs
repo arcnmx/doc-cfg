@@ -1,5 +1,5 @@
 //#![deny(missing_docs)] // https://github.com/rust-lang/rust/issues/42008
-#![doc(html_root_url = "http://docs.rs/doc-cfg/0.1.0")]
+#![doc(html_root_url = "http://docs.rs/doc-cfg/0.1.1")]
 
 //! The [`doc_cfg`] attribute is a convenience that removes the boilerplate
 //! involved with using [`#[doc(cfg(..))]`](https://doc.rust-lang.org/unstable-book/language-features/doc-cfg.html)
@@ -29,7 +29,9 @@ extern crate proc_macro;
 
 use std::iter::FromIterator;
 use proc_macro2::{TokenStream, TokenTree, Delimiter, Ident, Spacing};
-use quote::quote;
+
+#[macro_use]
+mod quote_macro;
 
 /// The `#[doc_cfg(..)]` attribute works much like `#[cfg(..)]`, but it allows
 /// the item being documented to show up in the crate documentation when built
@@ -81,18 +83,18 @@ fn doc_cfg_(attr: TokenStream, input: TokenStream, needs_cfg_attr: bool) -> Toke
     let parsed = parse_item(input);
 
     let cfg = if needs_cfg_attr {
-        quote! {
+        quote! { attr =>
             #[cfg_attr(feature = "unstable-doc-cfg", cfg(any(#attr, rustdoc)))]
             #[cfg_attr(not(feature = "unstable-doc-cfg"), cfg(#attr))]
         }
     } else {
-        quote! {
+        quote! { attr =>
             #[cfg(any(#attr, rustdoc))]
         }
     };
 
     let doc_cfg = if parsed.doc_cfg.is_empty() {
-        vec![quote! { #[doc(cfg(#attr))] }]
+        vec![quote! { attr => #[doc(cfg(#attr))] }]
     } else {
         parsed.doc_cfg
     };
@@ -100,18 +102,18 @@ fn doc_cfg_(attr: TokenStream, input: TokenStream, needs_cfg_attr: bool) -> Toke
     let doc_cfg = doc_cfg.into_iter()
         .map(|doc_cfg| parse_cfg(doc_cfg).expect("internal doc_cfg parse error"))
         .map(|doc_cfg| if needs_cfg_attr {
-            quote! {
+            quote! { doc_cfg =>
                 #[cfg_attr(feature = "unstable-doc-cfg", doc(cfg(#doc_cfg)))]
             }
         } else {
-            quote! {
+            quote! { doc_cfg =>
                 #[doc(cfg(#doc_cfg))]
             }
         }).collect::<TokenStream>();
 
     let body = parsed.body;
 
-    quote! {
+    quote! { doc_cfg, cfg, body =>
         #doc_cfg
         #cfg
         #body
@@ -208,7 +210,6 @@ fn parse_item(input: TokenStream) -> DocCfg {
 
 #[cfg(test)]
 mod test {
-    use quote::quote;
     use proc_macro2::{TokenStream, TokenTree};
 
     #[test]

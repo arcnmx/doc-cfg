@@ -11,3 +11,4 @@ doc-cfg = { path = "../", version = "^0.1.0" }
 
 [features]
 unstable-doc-cfg = []
+quote = ["doc-cfg/quote"] # used for testing, please ignore

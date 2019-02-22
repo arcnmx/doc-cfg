@@ -1,6 +1,6 @@
 [package]
 name = "doc-cfg"
-version = "0.1.0" # keep in sync with html_root_url
+version = "0.1.1" # keep in sync with html_root_url
 authors = ["arcnmx"]
 edition = "2018"
 
@@ -22,4 +22,4 @@ maintenance = { status = "passively-maintained" }
 
 [dependencies]
 proc-macro2 = "^0.4.27"
-quote = { version = "^0.6.11", default-features = false }
+quote = { version = "^0.6.11", default-features = false, optional = true } # used for testing, please ignore
